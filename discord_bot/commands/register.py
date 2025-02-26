@@ -143,6 +143,132 @@ class RegisterView(discord.ui.View):
             pass
 
 
+class DeleteView(discord.ui.View):
+    def __init__(self, interaction: discord.Interaction):
+        super().__init__(timeout=180)
+        self.interaction = interaction
+        self.category = None
+        self.board = None
+        self._namespace = {"category": None, "board": None}
+
+    # 1. @discord.ui.select 데코레이터가 아래 메서드를 감싸서 Select UI 컴포넌트를 생성
+    # 2. 생성된 Select 컴포넌트는 자동으로 self.select_category 속성으로 저장됨
+    # 3. placeholder와 options는 Select 컴포넌트의 초기 설정값이 됨
+    @discord.ui.select(
+        placeholder="게시판 카테고리를 선택하세요",
+        options=[
+            discord.SelectOption(label=choice["name"], value=choice["value"])
+            for choice in ScrapperCategory.get_category_choices()
+        ],
+    )
+    async def select_category(
+        self, interaction: discord.Interaction, select: discord.ui.Select
+    ):
+        self.category = select.values[0]
+        self._namespace["category"] = self.category
+        self.update_board_select()
+        selected_category = next(
+            (
+                choice["name"]
+                for choice in ScrapperCategory.get_category_choices()
+                if choice["value"] == select.values[0]
+            ),
+            "알 수 없는 카테고리",
+        )
+        self.select_category.placeholder = selected_category
+        await interaction.response.edit_message(view=self)
+
+    @discord.ui.select(
+        placeholder="게시판을 선택하세요",
+        options=[
+            discord.SelectOption(label="먼저 카테고리를 선택하세요", value="none")
+        ],
+    )
+    async def select_board(
+        self, interaction: discord.Interaction, select: discord.ui.Select
+    ):
+        self.board = select.values[0]
+        self._namespace["board"] = self.board
+
+        await interaction.response.edit_message(
+            content="삭제 중...",
+            view=None,
+        )
+        await self.unregister_notice(interaction.followup)
+
+    def update_board_select(self):
+        if not self.category:
+            return
+
+        choices = ScrapperCategory.get_scrapper_choices(self.category)
+        self.select_board.options = [
+            discord.SelectOption(label=choice["name"], value=choice["value"])
+            for choice in choices
+        ]
+
+    @discord.ui.button(label="취소", style=discord.ButtonStyle.red)
+    async def cancel_button(
+        self, interaction: discord.Interaction, button: discord.ui.Button
+    ):
+        self._namespace = {"category": None, "board": None}
+        await interaction.response.edit_message(
+            content="명령어가 취소되었습니다.", view=None
+        )
+
+    async def unregister_notice(self, followup):
+        try:
+            scrapper_type = ScrapperType.from_str(self.board)
+            if isinstance(self.interaction.channel, discord.DMChannel):
+                channel_id = str(self.interaction.user.id)
+                channel_name = self.interaction.user.name
+                channel_type = "direct-messages"
+                guild_name = None
+            else:
+                if not self.interaction.permissions.administrator:
+                    await followup.send(
+                        "이 명령어는 관리자 권한이 필요합니다.", ephemeral=True
+                    )
+                    return
+                channel_id = str(self.interaction.channel_id)
+                channel_name = self.interaction.channel.name
+                channel_type = "server-channels"
+                guild_name = self.interaction.guild.name
+
+            if self.interaction.client.scrapper_config.remove_scrapper(
+                channel_id, channel_type, scrapper_type
+            ):
+                await self.interaction.edit_original_response(content="✅ 완료")
+                await followup.send(
+                    content=f"이 {channel_type}에서 {scrapper_type.get_korean_name()} 알림이 삭제되었습니다."
+                )
+                if channel_type == "server-channels":
+                    logger.info(
+                        f"서버 채널에서 삭제: 채널 ID - {channel_id} | 서버 이름 - {guild_name} | 채널 이름 - {channel_name} | 스크래퍼 타입 - {scrapper_type.get_korean_name()}"
+                    )
+                else:
+                    logger.info(
+                        f"DM에서 삭제: 사용자 ID - {channel_id} | 사용자 이름 - {channel_name} | 스크래퍼 타입 - {scrapper_type.get_korean_name()}"
+                    )
+            else:
+                await self.interaction.edit_original_response(content="❗ 실패")
+                await followup.send(
+                    content=f"이 {channel_type}에는 {scrapper_type.get_korean_name()} 알림이 등록되어 있지 않습니다."
+                )
+        except Exception as e:
+            logger.error(f"알림 삭제 중 오류 발생: {e}")
+            await self.interaction.edit_original_response(content="❌ 오류 발생")
+            await followup.send(content="알림 삭제 중 오류가 발생했습니다.")
+
+    async def on_timeout(self):
+        try:
+            self._namespace = {"category": None, "board": None}
+            await self.interaction.edit_original_message(
+                content="시간이 초과되어 명령어가 취소되었습니다.", view=None
+            )
+        except:
+            pass
+
+
 async def setup(bot):
     """공지 등록/삭제 관련 명령어들을 봇에 등록합니다."""
 
@@ -163,51 +289,13 @@ async def setup(bot):
     @bot.tree.command(
         name="게시판_선택취소", description="선택한 게시판의 알림을 취소합니다"
     )
-    @app_commands.describe(type="게시판 종류")
-    @app_commands.choices(type=ScrapperType.get_choices())
-    async def unregister_notice(interaction: discord.Interaction, type: str):
+    async def unregister_notice(interaction: discord.Interaction):
         """현재 채널에서 선택한 유형의 공지사항 알림을 삭제합니다."""
         try:
-            # DM에서 실행된 경우 사용자 ID를 사용
-            if isinstance(interaction.channel, discord.DMChannel):
-                channel_id = str(interaction.user.id)
-                channel_name = interaction.user.name
-                channel_type = "direct-messages"
-            else:
-                # 서버 채널인 경우 관리자 권한 확인
-                if not interaction.permissions.administrator:
-                    await interaction.response.send_message(
-                        "이 명령어는 관리자 권한이 필요합니다.", ephemeral=True
-                    )
-                    return
-                channel_id = str(interaction.channel_id)
-                channel_type = "server-channels"
-                channel_name = interaction.channel.name
-                guild_name = interaction.guild.name
-
-            scrapper_type = ScrapperType.from_str(type)
-            if not scrapper_type:
-                await interaction.response.send_message(
-                    "올바르지 않은 스크래퍼 타입입니다.", ephemeral=True
-                )
-                return
-            if interaction.client.scrapper_config.remove_scrapper(
-                channel_id, channel_type, scrapper_type
-            ):
-                message = f"✅ 이 {channel_type}에서 {scrapper_type.get_korean_name()} 알림이 삭제되었습니다."
-                if channel_type == "server-channels":
-                    logger.info(
-                        f"서버 채널에서 삭제: 채널 ID - {channel_id} | 서버 이름 - {guild_name} | 채널 이름 - {channel_name} | 스크래퍼 타입 - {scrapper_type.get_korean_name()}"
-                    )
-                else:
-                    logger.info(
-                        f"DM 채널에서 삭제: 사용자 ID - {channel_id} | 사용자 이름 - {channel_name} | 스크래퍼 타입 - {scrapper_type.get_korean_name()}"
-                    )
-            else:
-                message = f"❗ 이 {channel_type}에는 {scrapper_type.get_korean_name()} 알림이 등록되어 있지 않습니다."
-
-            await interaction.response.send_message(message, ephemeral=True)
-
+            view = DeleteView(interaction)
+            await interaction.response.send_message(
+                "삭제할 게시판을 선택해주세요:", view=view, ephemeral=True
+            )
         except Exception as e:
             logger.error(f"알림 삭제 중 오류 발생: {e}")
             await interaction.response.send_message(
