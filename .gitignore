@@ -29,6 +29,7 @@ var/
 
 # 가상환경
 venv/
+.venv/
 envs/
 
 # IDE 관련
