@@ -36,6 +36,10 @@ def load_env_file():
             "MONGODB_URI": os.getenv("MONGODB_URI"),
             "DB_NAME": os.getenv("DB_NAME"),
             "DISCORD_TOKEN": os.getenv("DISCORD_TOKEN"),
+            "DISCORD_PORT": os.getenv("DISCORD_PORT"),
+            "KAKAO_PORT": os.getenv("KAKAO_PORT"),
+            "KAKAO_CHANNEL_ID": os.getenv("KAKAO_CHANNEL_ID"),
+            "KAKAO_API_KEY": os.getenv("KAKAO_API_KEY"),
             # 필요한 다른 환경 변수들도 여기에 추가
         }
     else:
