@@ -9,11 +9,27 @@ from typing import List
 from config.env_loader import ENV
 from utils.scraper_factory import ScraperFactory
 from utils.scraper_type import ScraperType
-from utils.time_utils import is_working_hour
 from config.logger_config import setup_logger
 from template.notice_data import NoticeData
 
 logger = setup_logger(__name__)
+
+def is_working_hour():
+    """현재 시간이 작동 시간(월~토 8시~20시)인지 확인합니다."""
+    if not ENV["IS_PROD"]:
+        return True
+
+    now = datetime.now(pytz.timezone("Asia/Seoul"))
+
+    # 일요일(6) 체크
+    if now.weekday() == 6:
+        return False
+
+    # 시간 체크 (8시~20시)
+    if now.hour < 8 or now.hour >= 21:
+        return False
+
+    return True
 
 async def check_all_notices():
     """모든 스크래퍼를 실행하고 새로운 공지사항을 처리합니다."""
