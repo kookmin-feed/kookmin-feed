@@ -1,6 +1,7 @@
 from enum import Enum
 from typing import List, Dict
 from utils.scraper_type import ScraperType
+from config.env_loader import ENV
 
 
 class ScraperCategory(Enum):
@@ -165,11 +166,20 @@ class ScraperCategory(Enum):
         self.scraper_types = scraper_types
 
     @classmethod
-    def get_category_choices(cls) -> List[Dict]:
+    def get_category_choices(cls, get_all: bool = False) -> List[Dict]:
         """디스코드 명령어용 카테고리 선택지 목록을 반환합니다."""
-        return [
-            {"name": category.korean_name, "value": category.name} for category in cls
-        ]
+        if get_all or "ALL_" in ENV["CATEGORY_LIST"]:
+            return [
+                {"name": category.korean_name, "value": category.name} for category in cls
+            ]
+        
+        ret = []
+
+        for category in cls:
+            if category.name in ENV['CATEGORY_LIST']:
+                ret.append( {"name": category.korean_name, "value": category.name} )
+        return ret
+
 
     @classmethod
     def get_scraper_choices(cls, category_name: str) -> List[Dict]:

@@ -2,6 +2,7 @@ import discord
 from utils.scraper_type import ScraperType
 from config.logger_config import setup_logger
 from utils.scraper_category import ScraperCategory
+from config.env_loader import ENV
 
 logger = setup_logger(__name__)
 
@@ -145,7 +146,7 @@ class RegisterView(discord.ui.View):
 async def setup(bot):
     """공지 등록/삭제 관련 명령어들을 봇에 등록합니다."""
 
-    @bot.tree.command(name="게시판_선택", description="알림을 받을 게시판을 선택합니다")
+    @bot.tree.command(name="게시판_선택", description=ENV["SELECT_CATEGORY_ANNOUNCEMENT"])
     async def register_notice(interaction: discord.Interaction):
         """공지사항 알림을 등록합니다."""
         try:
@@ -329,7 +330,7 @@ async def setup(bot):
             )
 
     @bot.tree.command(
-        name="선택된_게시판", description="현재 선택된 게시판 목록을 보여줍니다"
+        name="선택된_게시판", description=ENV["CHECK_CATEGORY_ANNOUNCEMENT"]
     )
     async def list_crawlers(interaction: discord.Interaction):
         """현재 채널에 등록된 공지사항 알림 목록을 보여줍니다."""

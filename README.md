@@ -48,6 +48,22 @@ DISCORD_TOKEN=your_discord_bot_token
 MONGODB_URI=your_mongodb_connection_string
 DB_NAME=your_database_name
 YOUTUBE_API_KEY=your_youtube_api_key
+
+
+# 선택사항
+# 아래 환경 변수는 설정하지 않아도 기본값이 존재함.
+
+# 공백없이 , 로 구분하여 사용할 카테고리 타입 나열. 기본값: ALL_
+CATEGORY_LIST=UNIVERSITY_CATEGORY,COMPUTERSCIENCE_CATEGORY
+
+# "게시판_선택" 명령어 설명. 기본값: 알림을 받을 게시판을 선택합니다.
+SELECT_CATEGORY_ANNOUNCEMENT=국민대 게시판 중 알림받을 게시판을 선택합니다.
+
+# "게시판_선택취소" 명령어 설명. 기본값: 선택한 게시판의 알림을 취소합니다.
+CHECK_CATEGORY_ANNOUNCEMENT=국민대 게시판 중 알림을 취소할 게시판을 선택합니다.
+
+# "선택된_게시판" 명령어 설명. 기본값: 현재 선택된 게시판을 보여줍니다.
+REMOVE_CATEGORY_ANNOUNCEMENT=국민대 게시판 중, 선택된 게시판을 확인합니다.
 ```
 
 ## 프로젝트 구조

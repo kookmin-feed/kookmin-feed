@@ -37,6 +37,10 @@ def load_env_file():
             "DB_NAME": os.getenv("DB_NAME"),
             "DISCORD_TOKEN": os.getenv("DISCORD_TOKEN"),
             "YOUTUBE_API_KEY": os.getenv("YOUTUBE_API_KEY"),
+            "CATEGORY_LIST": os.getenv("CATEGORY_LIST", "ALL_").split(','),
+            "SELECT_CATEGORY_ANNOUNCEMENT": os.getenv("SELECT_CATEGORY_ANNOUNCEMENT", "알림을 받을 게시판을 선택합니다."),
+            "CHECK_CATEGORY_ANNOUNCEMENT": os.getenv("CHECK_CATEGORY_ANNOUNCEMENT", "현재 선택된 게시판을 보여줍니다."),
+            "REMOVE_CATEGORY_ANNOUNCEMENT": os.getenv("REMOVE_CATEGORY_ANNOUNCEMENT", "선택한 게시판의 알림을 취소합니다.")
             # 필요한 다른 환경 변수들도 여기에 추가
         }
     else:
