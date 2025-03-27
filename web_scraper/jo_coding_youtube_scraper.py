@@ -35,7 +35,8 @@ class JoCodingYoutubeScraper(WebScraper):
             "maxResults": 5,  # 최신 3개 쇼츠 영상
             "key": self.api_key,
             "videoDuration": "short",  # 짧은 영상 (60초 이하)
-            "type": "video"  # 오직 비디오만
+            "type": "video",  # 오직 비디오만
+            "order": "date"
         }
 
         try:
