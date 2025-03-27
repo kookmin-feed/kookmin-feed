@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from datetime import datetime
 from utils.scraper_type import ScraperType
-
+from pydantic import BaseModel
 
 @dataclass
 class NoticeData:
@@ -20,3 +20,9 @@ class NoticeData:
             f"링크: {self.link}\n"
             f"{'-' * 80}"
         )
+
+class NoticeDataModel(BaseModel):
+    title: str
+    link: str
+    published: datetime
+    scraper_type: ScraperType
