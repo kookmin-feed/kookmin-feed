@@ -47,6 +47,7 @@ pip install -r requirements.txt
 DISCORD_TOKEN=your_discord_bot_token
 MONGODB_URI=your_mongodb_connection_string
 DB_NAME=your_database_name
+YOUTUBE_API_KEY=your_youtube_api_key
 ```
 
 ## 프로젝트 구조

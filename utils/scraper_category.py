@@ -153,6 +153,13 @@ class ScraperCategory(Enum):
         ],
     )
 
+    YOUTUBE_CATEGORY = (
+        "유튜브",
+        [
+            ScraperType.JO_CODING_YOUTUBE,
+        ],
+    )
+
     def __init__(self, korean_name: str, scraper_types: List[ScraperType]):
         self.korean_name = korean_name
         self.scraper_types = scraper_types

@@ -40,6 +40,7 @@ def load_env_file():
             "KAKAO_PORT": os.getenv("KAKAO_PORT"),
             "KAKAO_CHANNEL_ID": os.getenv("KAKAO_CHANNEL_ID"),
             "KAKAO_API_KEY": os.getenv("KAKAO_API_KEY"),
+            "YOUTUBE_API_KEY": os.getenv("YOUTUBE_API_KEY"),
             # 필요한 다른 환경 변수들도 여기에 추가
         }
     else:

@@ -305,6 +305,13 @@ class ScraperType(Enum):
         "NccossGeneralScraper",
     )
 
+    JO_CODING_YOUTUBE = (
+        "jo_coding_youtube",
+        "조코딩 유튜브",
+        "https://www.youtube.com/@jocoding/shorts",
+        "JoCodingYoutubeScraper",
+    )
+
     def get_collection_name(self) -> str:
         """MongoDB 컬렉션 이름을 반환합니다."""
         return self.value[0]
