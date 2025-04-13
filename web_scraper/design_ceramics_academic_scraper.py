@@ -89,8 +89,12 @@ class DesignCeramicsAcademicScraper(WebScraper):
                                 tzinfo=self.kst
                             )
                         except ValueError:
-                            self.logger.error(f"날짜 파싱 오류: {date_str}")
-                            published = datetime.now(self.kst)
+                            if ":" in date_str:
+                                published = datetime.now(self.kst)
+                                self.logger.log(f"당일 공지사항: {date_str}")
+                            else:
+                                self.logger.error(f"날짜 파싱 오류: {date_str}")
+                                published = datetime.now(self.kst)
 
             return NoticeData(
                 title=title,
