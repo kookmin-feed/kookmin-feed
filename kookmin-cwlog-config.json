@@ -1,0 +1,18 @@
+{
+  "logs": {
+    "logs_collected": {
+      "files": {
+        "collect_list": [
+          {
+            "file_path": "/home/ubuntu/.pm2/logs/kookmin-feed-error.log",
+            "log_group_name": "kookmin-feed-errors",
+            "log_stream_name": "{instance_id}",
+            "multi_line_start_pattern": "^{",
+            "timezone": "Local",
+            "encoding": "utf-8"
+          }
+        ]
+      }
+    }
+  }
+} 
