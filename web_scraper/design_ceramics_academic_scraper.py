@@ -1,5 +1,5 @@
 from bs4 import BeautifulSoup
-from datetime import datetime
+from datetime import datetime, date
 from template.notice_data import NoticeData
 from utils.scraper_type import ScraperType
 from utils.web_scraper import WebScraper
@@ -73,24 +73,39 @@ class DesignCeramicsAcademicScraper(WebScraper):
                 published = datetime.now(self.kst)
             else:
                 date_str = date_td.text.strip()
+                published = None
                 try:
+                    # 시도 1: YYYY.MM.DD
                     published = datetime.strptime(date_str, "%Y.%m.%d").replace(
                         tzinfo=self.kst
                     )
                 except ValueError:
                     try:
+                        # 시도 2: YYYY-MM-DD
                         published = datetime.strptime(date_str, "%Y-%m-%d").replace(
                             tzinfo=self.kst
                         )
                     except ValueError:
                         try:
-                            # 'YY.MM.DD' 형식 추가
+                            # 시도 3: YY.MM.DD
                             published = datetime.strptime(date_str, "%y.%m.%d").replace(
                                 tzinfo=self.kst
                             )
                         except ValueError:
-                            self.logger.error(f"날짜 파싱 오류: {date_str}")
-                            published = datetime.now(self.kst)
+                            try:
+                                # 시도 4: HH:MM (오늘 날짜 적용)
+                                time_obj = datetime.strptime(date_str, "%H:%M").time()
+                                today_date = date.today()
+                                published = datetime.combine(today_date, time_obj).replace(
+                                    tzinfo=self.kst
+                                )
+                            except ValueError:
+                                self.logger.error(f"지원하지 않는 날짜 형식 또는 파싱 오류: {date_str}")
+                                published = datetime.now(self.kst)
+
+            if published is None:
+                self.logger.error(f"날짜 파싱 최종 실패: {date_str}, 현재 시간으로 설정")
+                published = datetime.now(self.kst)
 
             return NoticeData(
                 title=title,
