@@ -1,5 +1,5 @@
 from bs4 import BeautifulSoup
-from datetime import datetime
+from datetime import datetime, date, time
 from template.notice_data import NoticeData
 from utils.scraper_type import ScraperType
 from utils.web_scraper import WebScraper
@@ -66,31 +66,38 @@ class DesignCeramicsAcademicScraper(WebScraper):
             else:
                 link = relative_link
 
-            # 날짜 추출
+            # 날짜 추출 및 파싱
             date_td = element.select_one("td.kboard-list-date")
-            if not date_td:
-                self.logger.warning("날짜 요소를 찾을 수 없음")
-                published = datetime.now(self.kst)
-            else:
+            published = None
+            if date_td:
                 date_str = date_td.text.strip()
-                try:
-                    published = datetime.strptime(date_str, "%Y.%m.%d").replace(
-                        tzinfo=self.kst
-                    )
-                except ValueError:
+                # 시도할 날짜 형식 리스트
+                date_formats = ["%Y.%m.%d", "%Y-%m-%d", "%y.%m.%d", "%H:%M"]
+
+                for fmt in date_formats:
                     try:
-                        published = datetime.strptime(date_str, "%Y-%m-%d").replace(
-                            tzinfo=self.kst
-                        )
+                        if fmt == "%H:%M":
+                            # 시간 형식인 경우 오늘 날짜와 결합
+                            time_obj = datetime.strptime(date_str, fmt).time()
+                            today_date = date.today()
+                            published = datetime.combine(today_date, time_obj).replace(tzinfo=self.kst)
+                        else:
+                            # 다른 날짜 형식 시도
+                            published = datetime.strptime(date_str, fmt).replace(tzinfo=self.kst)
+
+                        # 파싱 성공 시 반복 중단
+                        break
                     except ValueError:
-                        try:
-                            # 'YY.MM.DD' 형식 추가
-                            published = datetime.strptime(date_str, "%y.%m.%d").replace(
-                                tzinfo=self.kst
-                            )
-                        except ValueError:
-                            self.logger.error(f"날짜 파싱 오류: {date_str}")
-                            published = datetime.now(self.kst)
+                        # 파싱 실패 시 다음 형식 시도
+                        continue
+
+                # 모든 형식이 실패한 경우
+                if published is None:
+                    self.logger.error(f"지원하지 않는 날짜 형식 또는 파싱 오류: {date_str}")
+                    published = datetime.now(self.kst) # Fallback
+            else:
+                self.logger.warning("날짜 요소를 찾을 수 없음")
+                published = datetime.now(self.kst) # Fallback
 
             return NoticeData(
                 title=title,
@@ -99,5 +106,5 @@ class DesignCeramicsAcademicScraper(WebScraper):
                 scraper_type=self.scraper_type,
             )
         except Exception as e:
-            self.logger.error(f"공지사항 파싱 중 오류: {e}")
+            self.logger.error(f"공지사항 파싱 중 오류: {e}", exc_info=True)
             return None
