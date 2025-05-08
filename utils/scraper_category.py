@@ -13,6 +13,7 @@ class ScraperCategory(Enum):
             ScraperType.UNIVERSITY_SCHOLARSHIP,
             ScraperType.UNIVERSITY_SPECIALLECTURE,
             ScraperType.UNIVERSITY_CONTESTEVENT,
+            ScraperType.UNIVERSITY_BUKAKPOLITICALFORUM,
         ],
     )
 
