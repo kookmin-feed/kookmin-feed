@@ -1,8 +1,6 @@
 import re
-from typing import Dict, List
 from bs4 import BeautifulSoup
 from datetime import datetime
-import pytz
 from utils.web_scraper import WebScraper
 from utils.scraper_type import ScraperType
 from template.notice_data import NoticeData
