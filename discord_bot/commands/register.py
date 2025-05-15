@@ -91,8 +91,8 @@ class RegisterView(discord.ui.View):
             else:
                 # 서버 채널인 경우 관리자 권한 확인
                 if not self.interaction.permissions.administrator:
-                    await self.interaction.response.send_message(
-                        "이 명령어는 관리자 권한이 필요합니다.", ephemeral=True
+                    await self.interaction.edit_original_response(
+                        content="❕ 이 명령어는 관리자 권한이 필요합니다."
                     )
                     return
                 channel_id = str(self.interaction.channel_id)
