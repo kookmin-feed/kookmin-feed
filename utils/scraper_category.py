@@ -14,6 +14,7 @@ class ScraperCategory(Enum):
             ScraperType.UNIVERSITY_SPECIALLECTURE,
             ScraperType.UNIVERSITY_CONTESTEVENT,
             ScraperType.UNIVERSITY_BUKAKPOLITICALFORUM,
+            ScraperType.UNIVERSITY_THURSDAYLECTURE,
         ],
     )
 

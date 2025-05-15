@@ -319,6 +319,13 @@ class ScraperType(Enum):
         "UniversityBukakpoliticalforumScraper",
     )
 
+    UNIVERSITY_THURSDAYLECTURE = (
+        "university_thursdaylecture",
+        "목요특강",
+        "https://www.kookmin.ac.kr/user/kmuNews/specBbs/thursdayLecture/index.do",
+        "UniversityThursdaylectureScraper",
+    )
+
     def get_collection_name(self) -> str:
         """MongoDB 컬렉션 이름을 반환합니다."""
         return self.value[0]
