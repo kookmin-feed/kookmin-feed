@@ -41,5 +41,4 @@ channel_config.json
 
 test.py
 mongo.py
-*.txt
 *.html
