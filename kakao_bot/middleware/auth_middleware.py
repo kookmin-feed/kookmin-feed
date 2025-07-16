@@ -37,7 +37,7 @@ class UserAuthMiddleware(BaseHTTPMiddleware):
             
             if not is_registered:
                 logger.info(f"미등록 사용자 접근: {user_id} 로그인 요청 블럭 리턴")
-                return create_login_response("로그인 후 이용해주세요.")
+                return create_login_response()
             
             # 검증된 user_id를 request state에 저장
             request.state.verified_user_id = user_id
@@ -57,29 +57,11 @@ class UserAuthMiddleware(BaseHTTPMiddleware):
     async def extract_user_id(self, request: Request) -> str:
         """Request에서 user_id를 추출"""
         try:
-            # 1. Query parameter에서 확인
-            user_id = request.query_params.get("user_id")
+            body = await request.json()
+            # 1. body에서 확인
+            user_id = body['userRequest']['user']['id']
             if user_id:
                 return user_id
-            
-            # 2. Request body에서 확인 (POST 요청)
-            if request.method == "POST":
-                body = await request.body()
-                
-                # Request body를 다시 사용할 수 있도록 복원
-                async def receive():
-                    return {"type": "http.request", "body": body}
-                
-                request._receive = receive
-                
-                if body:
-                    try:
-                        json_data = json.loads(body)
-                        return json_data.get("user_id")
-                    except json.JSONDecodeError:
-                        logger.warning("Request body가 유효한 JSON이 아님")
-            
-            return None
             
         except Exception as e:
             logger.error(f"user_id 추출 중 오류: {str(e)}")

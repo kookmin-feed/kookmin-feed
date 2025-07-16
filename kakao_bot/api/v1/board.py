@@ -2,7 +2,8 @@ from fastapi import APIRouter, HTTPException, Depends, Request
 from commands.register import register_user
 from config.logger_config import setup_logger
 from api.deps import get_api_key
-
+from kakao_bot.config.env_loader import ENV
+from starlette.responses import JSONResponse
 logger = setup_logger(__name__)
 
 router = APIRouter()
@@ -37,3 +38,34 @@ async def board_register(
     except Exception as e:
         logger.error(f"게시판 등록 중 오류: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/test")
+async def test(
+    user_id: str,
+):
+
+    login_url = ENV.get('SERVER_URL', 'http://localhost:8000')
+    response = {
+    "version": "2.0",
+    "template": {
+        "outputs": [
+            {
+                    "textCard": {
+                        "title": "로그인이 필요합니다",
+                        "description": "로그인이 필요합니다",
+                        "buttons": [
+                            {
+                                "action": "webLink",
+                                "label": "로그인하기",
+                                "webLinkUrl": f"{login_url}/login"
+                            }
+                        ]
+                    }
+                }
+        ]
+    }
+}
+    return JSONResponse(
+        status_code=200,
+        content=response
+    )

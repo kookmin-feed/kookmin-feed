@@ -7,7 +7,7 @@ from starlette.responses import JSONResponse
 
 # ===== Response Creation Functions =====
 
-def create_login_response(message: str) -> JSONResponse:
+def create_login_response() -> JSONResponse:
     """미들웨어에서 로그인 링크가 포함된 카카오톡 응답 생성"""
     login_url = ENV.get('SERVER_URL', 'http://localhost:8000')
     
@@ -16,9 +16,9 @@ def create_login_response(message: str) -> JSONResponse:
         "template": {
             "outputs": [
                 {
-                    "basicCard": {
-                        "title": "로그인이 필요합니다",
-                        "description": message,
+                    "textCard": {
+                        "title": "로그인 필요합니다",
+                        "description": "로그인이 필요합니다",
                         "buttons": [
                             {
                                 "action": "webLink",
