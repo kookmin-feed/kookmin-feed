@@ -12,8 +12,6 @@ from kakao_bot.config.logger_config import setup_logger
 from template.scraper_type_list import MetaData
 import uvicorn
 
-from middleware.auth_middleware import UserAuthMiddleware
-from middleware.logging_middleware import LoggingMiddleware
 logger = setup_logger(__name__)
 
 @asynccontextmanager
@@ -25,7 +23,7 @@ async def lifespan(app: FastAPI):
     try:
         # data server connection 테스트
         logger.info("Data Server 연결 상태를 검사합니다...")
-        await get_data_from_server(endpoint="api/v1/connect-check")
+        await get_data_from_server(endpoint="connect-check")
 
         logger.info("meta data를 초기화합니다.")
         
@@ -53,12 +51,6 @@ app = FastAPI(
     version="1.0.0",
     lifespan=lifespan
 )
-
-# 미들웨어 추가
-app.add_middleware(UserAuthMiddleware)
-app.add_middleware(LoggingMiddleware)
-
-
 
 app.include_router(api_router, prefix="/api/v1")
 

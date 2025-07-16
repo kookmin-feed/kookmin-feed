@@ -23,7 +23,6 @@ def load_env_file():
     """환경에 따라 적절한 .env 파일을 로드하고 환경 설정을 반환합니다."""
     # 프로젝트 루트 디렉토리 경로
     root_dir = Path(__file__).parent.parent
-    print('root_dir', root_dir)
     
     # Ubuntu 환경이면 기본 .env, 아니면 .dev.env 로드
     is_prod = is_ubuntu()
@@ -33,12 +32,16 @@ def load_env_file():
     if env_file.exists():
         
         load_dotenv(env_file)
+
         return {
-            "IS_PROD": is_prod,
+            "IS_PROD": "DEV",
             "DATA_SERVER_URL": os.getenv("DATA_SERVER_URL"),
             "DATA_SERVER_API_KEY": os.getenv("DATA_SERVER_API_KEY"),
             "HOST": os.getenv("HOST"),
             "PORT": os.getenv("PORT"),
+            "API_KEY": os.getenv("API_KEY"),
+            "SERVER_URL": os.getenv("SERVER_URL"),
+
             # 필요한 다른 환경 변수들도 여기에 추가
         }
     else:
