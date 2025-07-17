@@ -41,6 +41,8 @@ def load_env_file():
             "PORT": os.getenv("PORT"),
             "API_KEY": os.getenv("API_KEY"),
             "SERVER_URL": os.getenv("SERVER_URL"),
+            "KAKAO_CLIENT_ID": os.getenv("KAKAO_CLIENT_ID"),
+            "KAKAO_REDIRECT_URL": os.getenv("KAKAO_REDIRECT_URL"),
 
             # 필요한 다른 환경 변수들도 여기에 추가
         }

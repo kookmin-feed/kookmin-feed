@@ -1,12 +1,15 @@
 import aiohttp
 from config.env_loader import ENV
 
-async def request_to_server(method: str, endpoint: str, params: dict = None, data: dict = None):
+async def request_to_server(method: str, endpoint: str, params: dict = None, data: dict = None, headers: dict = None):
     """HTTP 요청을 처리하는 공통 함수."""
     base_url = ENV["DATA_SERVER_URL"]
     apikey = ENV["DATA_SERVER_API_KEY"]
     url = f"http://{base_url}/{endpoint}"
-    headers = {"Authorization": f"Bearer {apikey}"}
+    if headers:
+        headers.update({"Authorization": f"Bearer {apikey}"})
+    else:
+        headers = {"Authorization": f"Bearer {apikey}"}
 
     try:
         async with aiohttp.ClientSession(headers=headers) as session:
@@ -25,18 +28,18 @@ async def request_to_server(method: str, endpoint: str, params: dict = None, dat
             # 예상치 못한 다른 예외
             raise Exception(f"{method} 요청 중 오류: {url} - {str(e)}")
 
-async def get_data_from_server(endpoint: str, params: dict = None):
+async def get_data_from_server(endpoint: str, params: dict = None, headers: dict = None):
     """데이터 서버에 데이터를 GET 요청으로 전송합니다."""
-    return await request_to_server("GET", endpoint, params=params)
+    return await request_to_server("GET", endpoint, params=params, headers=headers)
 
-async def post_data_to_server(endpoint: str, data: dict = None):
+async def post_data_to_server(endpoint: str, data: dict = None, headers: dict = None):
     """데이터 서버에 데이터를 POST 요청으로 전송합니다."""
-    return await request_to_server("POST", endpoint, data=data)
+    return await request_to_server("POST", endpoint, data=data, headers=headers)
 
-async def put_data_to_server(endpoint: str, data: dict = None):
+async def put_data_to_server(endpoint: str, data: dict = None, headers: dict = None):
     """데이터 서버에 데이터를 PUT 요청으로 전송합니다."""
-    return await request_to_server("PUT", endpoint, data=data)
+    return await request_to_server("PUT", endpoint, data=data, headers=headers)
 
-async def delete_data_from_server(endpoint: str, params: dict = None):
+async def delete_data_from_server(endpoint: str, params: dict = None, headers: dict = None):
     """데이터 서버에 DELETE 요청을 보냅니다."""
-    return await request_to_server("DELETE", endpoint, params=params)
+    return await request_to_server("DELETE", endpoint, params=params, headers=headers)

@@ -9,7 +9,7 @@ from starlette.responses import JSONResponse
 
 def create_login_response() -> JSONResponse:
     """미들웨어에서 로그인 링크가 포함된 카카오톡 응답 생성"""
-    login_url = ENV.get('SERVER_URL', 'http://localhost:8000')
+    login_url = f"https://kauth.kakao.com/oauth/authorize?client_id={ENV.get('KAKAO_CLIENT_ID')}&redirect_uri={ENV.get('KAKAO_REDIRECT_URL')}&response_type=code"
     
     kakao_response = {
         "version": "2.0",
@@ -23,7 +23,7 @@ def create_login_response() -> JSONResponse:
                             {
                                 "action": "webLink",
                                 "label": "로그인하기",
-                                "webLinkUrl": f"{login_url}/login"
+                                "webLinkUrl": f"{login_url}"
                             }
                         ]
                     }

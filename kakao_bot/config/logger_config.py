@@ -1,7 +1,7 @@
 import logging
 import sys
 from contextvars import ContextVar
-from config.env_loader import ENV
+from kakao_bot.config.env_loader import ENV
 
 # 요청 컨텍스트 변수들
 client_ip_context: ContextVar[str] = ContextVar('client_ip', default='Unknown')
