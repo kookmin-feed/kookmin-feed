@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, Depends, Request
-from commands.register import register_user
+from services.register import register_user
 from kakao_bot.config.logger_config import setup_logger
 from kakao_bot.api.deps import get_api_key
 from kakao_bot.config.env_loader import ENV
