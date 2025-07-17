@@ -82,3 +82,19 @@ class LoginRequiredResponse(BaseModel):
         }
         return cls(template=template)
 
+# ===== Request Models =====
+
+class KakaoCreateUser(BaseModel):
+    user_id: str
+    scrapers: List[str]
+    access_token: str
+    refresh_token: str
+    expires_in: int
+    refresh_token_expires_in: int
+
+# ===== Exception Models =====
+
+class UserAlreadyExists(Exception):
+    status_code: int = 409
+    detail: str = "User already exists"
+    

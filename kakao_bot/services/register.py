@@ -8,24 +8,23 @@ from kakao_bot.config.env_loader import ENV
 import requests
 from kakao_bot.config.logger_config import setup_logger
 from utils.data_server_conect import post_data_to_server, get_data_from_server
-from pydantic import BaseModel
 from fastapi import HTTPException
-
+from api.models.user_models import KakaoCreateUser, UserAlreadyExists
 logger = setup_logger(__name__)
 
-# 기존 함수 (필요시 다른 곳에서 사용)
-async def register_user(user_id: str) -> BaseModel or bool:
-    try:    
-        response = await post_data_to_server(f"{ENV['DATA_SERVER_URL']}/kakao/user", json={"user_id": user_id})
 
-        if response.status == 200:
-            return True
-        else:
-            raise Exception(response.status, response.text)
-        
+async def register_user(kakao_create_user: KakaoCreateUser) -> bool:
+    try:    
+        response = await post_data_to_server(f"api/v1/kakao/user", data=kakao_create_user.model_dump())
+        if response.get("status_code") == "409":
+            raise UserAlreadyExists()
+        return True
+
+    except UserAlreadyExists as e:
+        raise e
     except Exception as e:
         logger.error(f"Error registering user: {e}")
-        return False
+        raise e
 
 async def is_register_user(user_id: str) -> bool:
 

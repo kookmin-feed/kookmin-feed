@@ -51,7 +51,6 @@ class KakaoMessageService:
                 headers=headers
             )
             
-            logger.info(f"카카오 메시지 전송 성공: {text}")
             return response
             
         except Exception as e:

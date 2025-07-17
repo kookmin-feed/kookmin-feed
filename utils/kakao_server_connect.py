@@ -6,8 +6,7 @@ from config.env_loader import ENV
 async def request_to_server(method: str, url: str, params: dict = None, data: dict = None, headers: dict = None):
     """HTTP 요청을 처리하는 공통 함수."""
     try:
-        if headers["Content-Type"] == "application/x-www-form-urlencoded;charset=utf-8":
-            print("form-urlencoded")
+        if headers and headers.get("Content-Type") == "application/x-www-form-urlencoded;charset=utf-8":
             async with aiohttp.ClientSession(headers=headers) as session:
                 async with session.request(method, url, params=params, data=data) as response:
                     if response.status == 200:
@@ -15,7 +14,6 @@ async def request_to_server(method: str, url: str, params: dict = None, data: di
                     else:
                         raise Exception(f"API 호출 실패: {response.status} - {await response.text()}")
         else:
-            print("json")
             async with aiohttp.ClientSession(headers=headers) as session:
                 async with session.request(method, url,params=params, json=data) as response:
                     if response.status == 200:

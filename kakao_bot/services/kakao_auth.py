@@ -2,7 +2,7 @@ import json
 from typing import Dict, Any
 from kakao_bot.config.env_loader import ENV
 from kakao_bot.config.logger_config import setup_logger
-from kakao_bot.utils.kakao_server_connect import post_data_to_server
+from kakao_bot.utils.kakao_server_connect import post_data_to_server, get_data_from_server
 
 logger = setup_logger(__name__)
 
@@ -41,7 +41,6 @@ class KakaoAuthService:
                 headers=headers
             )
             
-            logger.info("카카오 액세스 토큰 발급 성공")
             return response
             
         except Exception as e:
@@ -85,3 +84,23 @@ class KakaoAuthService:
         except Exception as e:
             logger.error(f"카카오 액세스 토큰 갱신 실패: {str(e)}")
             raise
+    
+    @staticmethod
+    async def get_access_token_info(access_token: str) -> str:
+        """
+        액세스 토큰으로 토큰 정보를 가져옵니다.
+        """
+        try:
+            headers = {
+                "Authorization": f"Bearer {access_token}"
+            }
+
+            response = await get_data_from_server(
+                url="https://kapi.kakao.com/v1/user/access_token_info",
+                headers=headers
+            )
+            return str(response.get("id"))
+        except Exception as e:
+            logger.error(f"카카오 액세스 토큰 정보 가져오기 실패: {str(e)}")
+            raise
+
