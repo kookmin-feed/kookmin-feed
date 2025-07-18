@@ -37,7 +37,7 @@ def create_login_response() -> JSONResponse:
         content=kakao_response
     )
 
-def create_error_response(message: str) -> JSONResponse:
+def create_error_response() -> JSONResponse:
     """미들웨어에서 에러 응답 생성"""
     kakao_response = {
         "version": "2.0",
@@ -45,7 +45,7 @@ def create_error_response(message: str) -> JSONResponse:
             "outputs": [
                 {
                     "simpleText": {
-                        "text": f"오류: {message}"
+                        "text": f"로그인 오류가 발생했습니다. 개발자에게 문의 부탁드립니다."
                     }
                 }
             ]

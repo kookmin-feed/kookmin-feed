@@ -48,7 +48,7 @@ class UserAuthMiddleware(BaseHTTPMiddleware):
             
         except Exception as e:
             logger.error(f"사용자 인증 미들웨어 에러: {str(e)}")
-            return create_error_response("Internal server error during authentication")
+            return create_error_response()
     
     def is_protected_path(self, path: str) -> bool:
         """보호된 경로인지 확인"""
@@ -59,7 +59,7 @@ class UserAuthMiddleware(BaseHTTPMiddleware):
         try:
             body = await request.json()
             # 1. body에서 확인
-            user_id = body['userRequest']['user']['id']
+            user_id = body['userRequest']['user']['properties']['app_user_id']
             if user_id:
                 return user_id
             
