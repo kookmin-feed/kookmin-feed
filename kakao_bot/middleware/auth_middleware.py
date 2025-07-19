@@ -30,7 +30,7 @@ class UserAuthMiddleware(BaseHTTPMiddleware):
             
             if not user_id:
                 logger.info("user_id가 요청에 포함되지 않음")
-                return create_error_response("user_id is required")
+                return create_error_response()
             
             # 사용자 등록 상태 확인
             is_registered = await is_register_user(user_id)

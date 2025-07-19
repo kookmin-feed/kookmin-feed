@@ -5,6 +5,40 @@ from fastapi.responses import JSONResponse
 
 # ===== Response Models =====
 
+def BoardRegisterResponse(board_name: str, already_registered: bool = False):
+    """게시판 등록 응답 모델"""
+    if already_registered:
+        kakao_response = {
+            "version": "2.0",
+            "template": {
+                "outputs": [
+                    {
+                        "simpleText": {
+                            "text": f"{board_name} 게시판이 이미 등록되었습니다."
+                        }
+                    }
+                ]
+            }
+        }
+    else:
+        kakao_response = {
+            "version": "2.0",
+            "template": {
+                "outputs": [
+                    {
+                        "simpleText": {
+                            "text": f"{board_name} 게시판이 등록되었습니다."
+                        }
+                    }
+                ]
+            }
+        }
+
+    return JSONResponse(
+        status_code=200,
+        content=kakao_response
+    )
+
 def BoardListResponse(scrapers: List[str]):
     """게시판 목록 응답 모델"""
 
@@ -33,15 +67,15 @@ def BoardListResponse(scrapers: List[str]):
         content=kakao_response
     )
 
-def BoardListErrorResponse():
-    """게시판 목록 조회 에러 응답 모델"""
+def BoardErrorResponse():
+    """게시판 에러 응답 모델"""
     kakao_response = {
         "version": "2.0",
         "template": {
             "outputs": [
                 {
                     "simpleText": {  
-                        "text": "게시판 목록 조회 중 오류가 발생했습니다. 개발자에게 문의 부탁드립니다."
+                        "text": "오류가 발생했습니다. 개발자에게 문의 부탁드립니다."
                     }
                 }
             ]
@@ -52,3 +86,10 @@ def BoardListErrorResponse():
         status_code=200,
         content=kakao_response
     )
+
+
+# ==== Exception Models =====
+
+class BoardAlreadyExists(Exception):
+    status_code: int = 409
+    detail: str = "Board already exists"
