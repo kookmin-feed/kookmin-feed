@@ -3,6 +3,7 @@ from typing import Dict, Any
 from kakao_bot.config.env_loader import ENV
 from kakao_bot.config.logger_config import setup_logger
 from kakao_bot.utils.kakao_server_connect import post_data_to_server, get_data_from_server
+from kakao_bot.utils.data_server_conect import get_data_from_server as get_data_from_database_server
 
 logger = setup_logger(__name__)
 
@@ -104,3 +105,15 @@ class KakaoAuthService:
             logger.error(f"카카오 액세스 토큰 정보 가져오기 실패: {str(e)}")
             raise
 
+    @staticmethod
+    async def get_all_users() -> Dict[str, Any]:
+        """
+        모든 유저 정보를 가져옵니다.
+        """
+        try:
+            users = await get_data_from_database_server(
+                endpoint="/api/v1/users"
+            )
+            return users
+        except Exception as e:
+            raise e

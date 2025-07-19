@@ -2,9 +2,9 @@ from fastapi import Request
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.responses import JSONResponse
 from kakao_bot.config.logger_config import setup_logger
-from services.register import is_register_user
+from kakao_bot.services.register import is_register_user
 from kakao_bot.config.env_loader import ENV
-from api.models.user_models import create_login_response, create_error_response
+from kakao_bot.api.models.user_models import create_login_response, create_error_response
 import json
 
 logger = setup_logger(__name__)

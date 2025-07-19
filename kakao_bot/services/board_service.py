@@ -1,4 +1,4 @@
-from utils.kakao_server_connect import get_data_from_server, put_data_to_server
+from kakao_bot.utils.kakao_server_connect import get_data_from_server, put_data_to_server
 from kakao_bot.config.env_loader import ENV
 from kakao_bot.config.logger_config import setup_logger
 from kakao_bot.api.models.board_models import BoardAlreadyExists
@@ -30,6 +30,7 @@ async def add_board(user_id: str, board_name: str) -> bool:
     게시판 등록
     """
     try:
+        
         # 게시판 등록 로직 (실제 구현 필요)
         board_list = await get_board_list(user_id)
         if board_name in board_list:

@@ -4,10 +4,10 @@ from kakao_bot.config.env_loader import ENV
 from kakao_bot.utils.kakao_server_connect import post_data_to_server
 import requests
 import json
-from services.kakao_auth import KakaoAuthService
-from services.register import register_user
-from api.models.user_models import KakaoCreateUser, UserAlreadyExists
-from services.kakao_message import KakaoMessageService
+from kakao_bot.services.kakao_auth import KakaoAuthService
+from kakao_bot.services.register import register_user
+from kakao_bot.api.models.user_models import KakaoCreateUser, UserAlreadyExists
+from kakao_bot.services.kakao_message import KakaoMessageService
 
 logger = setup_logger(__name__)
 

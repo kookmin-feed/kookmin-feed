@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Depends, Request, Query
-from services.register import register_user
-from services.board_service import get_board_list, add_board
+from kakao_bot.services.register import register_user
+from kakao_bot.services.board_service import get_board_list, add_board
 from kakao_bot.config.logger_config import setup_logger
 from kakao_bot.api.deps import get_api_key
 from kakao_bot.config.env_loader import ENV
@@ -11,7 +11,7 @@ logger = setup_logger(__name__)
 router = APIRouter()
 
 
-@router.post("/",
+@router.post("/register",
 summary="게시판 등록",
 description="게시판 등록",
 tags=["board"],
@@ -29,12 +29,15 @@ async def board_register(
     try:
         data = await request.json()
         user_id = data.get('userRequest').get('user').get('properties').get('app_user_id')
+        
         await add_board(user_id, board_name)
         
         logger.info(f"게시판 등록 성공: {user_id}, {board_name}")
         return BoardRegisterResponse(board_name, already_registered=False)
+        logger.info("여기서 오류 발생")
+        return BoardErrorResponse()
     except BoardAlreadyExists as e:
-        logger.info(f"이미 등록된 게시판: {e}")
+        logger.info(f"이미 등록된 게시판: {board_name}")
         return BoardRegisterResponse(board_name, already_registered=True)
     except Exception as e:
         logger.error(f"게시판 등록 중 오류: {e}")

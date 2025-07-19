@@ -7,9 +7,9 @@ sys.path.append(str(Path(__file__).parent.parent.parent))
 from kakao_bot.config.env_loader import ENV
 import requests
 from kakao_bot.config.logger_config import setup_logger
-from utils.data_server_conect import post_data_to_server, get_data_from_server
+from kakao_bot.utils.data_server_conect import post_data_to_server, get_data_from_server
 from fastapi import HTTPException
-from api.models.user_models import KakaoCreateUser, UserAlreadyExists
+from kakao_bot.api.models.user_models import KakaoCreateUser, UserAlreadyExists
 logger = setup_logger(__name__)
 
 

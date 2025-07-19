@@ -29,3 +29,7 @@ async def get_new_notices(notice_type: str = None, last_notice_link: str = None)
         )
         for item in response
     ]
+
+async def get_scraper_register_users(users : list[dict], scraper_type: str) -> list[dict]:
+    """스크래퍼 등록 유저를 가져옵니다."""
+    return [user for user in users if user["scraper_type"] == scraper_type]

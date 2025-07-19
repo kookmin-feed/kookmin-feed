@@ -1,6 +1,6 @@
 from fastapi import APIRouter
-from api.v1 import board
-from api.v1 import auth
+from . import board
+from . import auth
 api_router = APIRouter()
 
 

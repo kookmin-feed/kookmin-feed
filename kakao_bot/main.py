@@ -1,19 +1,21 @@
 import asyncio
 import os
+from contextlib import asynccontextmanager
+import sys
+import uvicorn
 from pathlib import Path
 from fastapi import FastAPI
-from api.v1.api import api_router
-from contextlib import asynccontextmanager
 
-from utils.data_server_conect import get_data_from_server
-from utils.enum_data_api import get_all_scraper_types, get_all_categories
+
+from kakao_bot.api.v1.api import api_router
+
+from kakao_bot.utils.data_server_conect import get_data_from_server
 from kakao_bot.config.env_loader import ENV
 from kakao_bot.config.logger_config import setup_logger
-from template.scraper_type_list import MetaData
-import uvicorn
+from kakao_bot.middleware.auth_middleware import UserAuthMiddleware
+from kakao_bot.middleware.logging_middleware import LoggingMiddleware
 
-from middleware.auth_middleware import UserAuthMiddleware
-from middleware.logging_middleware import LoggingMiddleware
+
 logger = setup_logger(__name__)
 
 @asynccontextmanager
@@ -28,13 +30,10 @@ async def lifespan(app: FastAPI):
         await get_data_from_server(endpoint="api/v1/connect-check")
 
         logger.info("meta data를 초기화합니다.")
-        
-        MetaData.category_list = await get_all_categories()
-        logger.info("카테고리 meta data 초기화 완료.")
 
-        MetaData.scraper_type_list = await get_all_scraper_types()  
-        logger.info("스크래퍼 타입 meta data를 초기화 완료.")
-        
+        # task = asyncio.create_task(check_notice())
+        logger.info(f"알림 체크 작업 생성:")
+
         logger.info("초기화가 완료되었습니다.")
         
     except Exception as e:
@@ -61,19 +60,19 @@ app.add_middleware(LoggingMiddleware)
 
 
 app.include_router(api_router, prefix="/api/v1")
+        
 
 # 개발 서버 실행용
 if __name__ == "__main__":
     try:
         host = ENV.get("HOST", "0.0.0.0")
         port = int(ENV.get("PORT","8000"))
-        kakao_bot_dir = Path(__file__).parent.resolve()
-        os.chdir(kakao_bot_dir)
+       
         uvicorn.run(
-            "main:app",
+            "kakao_bot.main:app",
             host=host,
             port=port,
-            reload=False, # 상위 디렉토리를 Python path에 추가하여  child process에서 참조하기 때문에, reload 불가
+            reload=False,
             log_level= "info" if ENV.get("IS_PROD") else "debug",
             access_log=False
         )

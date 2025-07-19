@@ -2,12 +2,16 @@ import json
 from typing import Dict, Any, Optional
 from kakao_bot.config.logger_config import setup_logger
 from kakao_bot.utils.kakao_server_connect import post_data_to_server
+from template.scraper_type import ScraperType
+from template.notice_data import NoticeData
 
 logger = setup_logger(__name__)
+
 
 class KakaoMessageService:
     """카카오 메시지 전송 관련 서비스"""
     
+
     @staticmethod
     async def send_text_message(access_token: str, text: str, web_url: Optional[str] = None) -> Dict[str, Any]:
         """
@@ -74,3 +78,16 @@ class KakaoMessageService:
             text="로그인 완료",
             web_url=service_url
         )
+
+    @staticmethod
+    async def send_notice(notice: NoticeData, scraper_type: ScraperType, users: list[dict]):
+
+        try:
+            for user in users:
+                await KakaoMessageService.send_text_message(
+                    access_token=user["access_token"],
+                    text=f"[{scraper_type.name}] {notice.title}",
+                    web_url=notice.link
+                )
+        except Exception as e:
+            raise e

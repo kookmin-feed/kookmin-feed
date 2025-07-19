@@ -8,7 +8,7 @@ environment = "DEV" if not ENV["IS_PROD"] else "PROD"  # 기본값은 DEV
 def setup_logger(name: str) -> logging.Logger:
     """로거를 설정하고 반환합니다."""
     logger = logging.getLogger(name)
-
+    print(f"root logger:")
     # 이미 핸들러가 설정되어 있다면 추가 설정하지 않음
     if logger.handlers:
         return logger

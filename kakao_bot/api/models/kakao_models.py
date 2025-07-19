@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from typing import Optional, Dict, Any, List
-from config.env_loader import ENV
+from kakao_bot.config.env_loader import ENV
 
 # ===== Request Models =====
 
